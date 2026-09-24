@@ -14,14 +14,22 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          curl -s -X POST \
+          curl -sS -f -X POST \
             "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent" \
             -H "x-goog-api-key: $GEMINI_API_KEY" \
             -H "Content-Type: application/json" \
             -d '{
               "contents": [{
                 "parts": [{
-                  "text": "Write a 2-minute YouTube video script about 5 amazing facts about Japan. Include a catchy title, a short introduction, 5 interesting facts, and a closing sentence. Write in simple English."
+                  "text": "Write a 2-minute YouTube video script about 5 amazing facts about Japan. Include a catchy title, a strong hook, and an engaging ending. Write in simple English."
                 }]
               }]
-            }'
+            }' > response.json
+
+          jq -r '.candidates[0].content.parts[0].text' response.json > japan_script.txt
+
+      - name: Save YouTube Script
+        uses: actions/upload-artifact@v4
+        with:
+          name: japan-youtube-script
+          path: japan_script.txt
