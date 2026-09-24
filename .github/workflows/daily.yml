@@ -4,10 +4,24 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 17 * * *"
+
 jobs:
-  test:
+  test-gemini:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Test automation
-        run: echo "YouTube automation system is working!"
+      - name: Test Gemini API
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          curl -s -X POST \
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent" \
+            -H "x-goog-api-key: $GEMINI_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "contents": [{
+                "parts": [{
+                  "text": "Say hello in one short sentence."
+                }]
+              }]
+            }'
