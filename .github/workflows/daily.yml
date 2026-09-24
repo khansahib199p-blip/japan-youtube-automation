@@ -6,11 +6,11 @@ on:
     - cron: "0 17 * * *"
 
 jobs:
-  test-gemini:
+  generate-script:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Test Gemini API
+      - name: Generate YouTube Script
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
@@ -21,7 +21,7 @@ jobs:
             -d '{
               "contents": [{
                 "parts": [{
-                  "text": "Say hello in one short sentence."
+                  "text": "Write a 2-minute YouTube video script about 5 amazing facts about Japan. Include a catchy title, a short introduction, 5 interesting facts, and a closing sentence. Write in simple English."
                 }]
               }]
             }'
