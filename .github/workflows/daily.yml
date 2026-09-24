@@ -14,17 +14,31 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          curl -sS -f -X POST \
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent" \
-            -H "x-goog-api-key: $GEMINI_API_KEY" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "contents": [{
-                "parts": [{
-                  "text": "Write a 2-minute YouTube video script about 5 amazing facts about Japan. Include a catchy title, a strong hook, and an engaging ending. Write in simple English."
+          for i in 1 2 3 4 5
+          do
+            echo "Gemini attempt $i..."
+
+            if curl -sS -f -X POST \
+              "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent" \
+              -H "x-goog-api-key: $GEMINI_API_KEY" \
+              -H "Content-Type: application/json" \
+              -d '{
+                "contents": [{
+                  "parts": [{
+                    "text": "Write a 2-minute YouTube video script about 5 amazing facts about Japan. Include a catchy title, a strong hook, and an engaging ending. Write in simple English."
+                  }]
                 }]
-              }]
-            }' > response.json
+              }' > response.json
+            then
+              echo "Gemini request successful!"
+              break
+            fi
+
+            echo "Gemini unavailable. Waiting 10 seconds..."
+            sleep 10
+          done
+
+          test -s response.json
 
           jq -r '.candidates[0].content.parts[0].text' response.json > japan_script.txt
 
